@@ -272,7 +272,41 @@
             document.getElementById(resId).innerText = 
                 String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
             document.getElementById(cntId).innerText = entries.length;
+            document.getElementById(cntId).innerText = entries.length;
         }
+
+        function prefillFromQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            
+            const mapping = {
+                'bedTimes': 'bed-in',
+                'wakeTimes': 'wake-in',
+                'fallTimes': 'fall-in',
+                'awakeTimes': 'awake-in'
+            };
+
+            for (const [paramName, inputId] of Object.entries(mapping)) {
+                if (params.has(paramName)) {
+                    const val = params.get(paramName);
+                    // Replace commas with newlines
+                    const formattedVal = val.split(',').join('\n');
+                    const element = document.getElementById(inputId);
+                    if (element) {
+                        element.value = formattedVal;
+                        // Trigger input event to run calculations
+                        element.dispatchEvent(new Event('input'));
+                    }
+                }
+            }
+        }
+
+        // Run on load
+        window.addEventListener('input', () => {
+             // Just ensures if anything needs to re-run it can, but main logic is in specific handlers
+        });
+        
+        // Call prefill initially
+        prefillFromQueryParams();
     </script>
 </body>
 </html>
