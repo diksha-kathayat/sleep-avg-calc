@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bedtime Fading Calculator</title>
+    <title>Bedtime Fading Summary</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f4f7fa;
@@ -21,10 +22,9 @@
         }
 
         .custom-shadow {
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
         }
 
-        /* Toast Animation */
         #toast {
             visibility: hidden;
             min-width: 180px;
@@ -42,7 +42,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             opacity: 0;
             transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
         }
@@ -53,12 +53,12 @@
             bottom: 50px;
         }
 
-        /* Smooth transition for button color changes */
         .copy-btn-transition {
             transition: all 0.3s ease;
         }
     </style>
 </head>
+
 <body class="py-12 px-4">
 
     <div id="toast">
@@ -66,138 +66,78 @@
         <span class="font-semibold text-sm">Copied!</span>
     </div>
 
-    <header class="text-center mb-12">
-        <div class="inline-flex items-center justify-center px-6 py-3 mb-4 bg-[#eef2ff] rounded-xl">
-            <div class="bg-[#5c5be5] p-2 rounded-lg text-white">
-                <i class="fa-solid fa-bed text-lg"></i>
-            </div>
-            <span class="ml-3 font-bold text-[#5c5be5] tracking-wider uppercase text-sm">Bedtime Fading Calculator</span>
-        </div>
-        <p class="text-slate-500 font-medium max-w-xl mx-auto">
-            Here is a summary of your last 7 day's sleep.
-        </p>
-    </header>
+    <div class="hidden">
+        <textarea id="bed-in" oninput="calcTime('bed-in', 'bed-res', 'bed-cnt')"></textarea>
+        <textarea id="wake-in" oninput="calcTime('wake-in', 'wake-res', 'wake-cnt')"></textarea>
+        <textarea id="fall-in" oninput="calcMin('fall-in', 'fall-res', 'fall-cnt')"></textarea>
+        <textarea id="awake-in" oninput="calcMin('awake-in', 'awake-res', 'awake-cnt')"></textarea>
+    </div>
 
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <div class="bg-white rounded-2xl overflow-hidden custom-shadow border border-slate-100">
-            <div class="bg-[#5c5be5] px-6 py-4 flex justify-between items-center text-white">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-moon"></i>
-                    <span class="font-bold tracking-wide uppercase">Bed Times</span>
-                </div>
-                <button onclick="clearField('bed-in')" class="bg-white/20 hover:bg-white/30 text-[10px] font-bold py-1 px-3 rounded uppercase transition-all">
-                    <i class="fa-solid fa-trash-can mr-1"></i> Clear All
-                </button>
-            </div>
-            <div class="p-6">
-                <label class="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-tight">Enter one time per line (HH:MM format)</label>
-                <textarea id="bed-in" oninput="calcTime('bed-in', 'bed-res', 'bed-cnt')" class="w-full h-48 p-4 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-100 text-slate-600 font-mono text-lg resize-none" placeholder="23:30&#10;00:15&#10;23:05&#10;22:50&#10;21:50&#10;22:30&#10;21:40"></textarea>
-                <div class="mt-6 p-6 rounded-2xl result-container-dashed text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Average Bed Times</p>
-                    <div class="flex items-center justify-center gap-4 mb-2">
-                        <span id="bed-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--:--</span>
-                        <button onclick="copyToClipboard('bed-res', this)" class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
-                            <i class="fa-regular fa-copy"></i> <span>COPY</span>
-                        </button>
-                    </div>
-                    <p class="text-xs text-slate-400">Based on <span id="bed-cnt" class="font-bold">0</span> bed times</p>
-                </div>
-            </div>
-        </div>
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-center text-slate-500 font-bold uppercase tracking-widest text-xs mb-8">Calculated Sleep
+            Averages</h2>
 
-        <div class="bg-white rounded-2xl overflow-hidden custom-shadow border border-slate-100">
-            <div class="bg-[#ef8e47] px-6 py-4 flex justify-between items-center text-white">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-gear"></i>
-                    <span class="font-bold tracking-wide uppercase">Wakeup Times</span>
-                </div>
-                <button onclick="clearField('wake-in')" class="bg-white/20 hover:bg-white/30 text-[10px] font-bold py-1 px-3 rounded uppercase transition-all">
-                    <i class="fa-solid fa-trash-can mr-1"></i> Clear All
-                </button>
-            </div>
-            <div class="p-6">
-                <label class="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-tight">Enter one time per line (HH:MM format)</label>
-                <textarea id="wake-in" oninput="calcTime('wake-in', 'wake-res', 'wake-cnt')" class="w-full h-48 p-4 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-100 text-slate-600 font-mono text-lg resize-none" placeholder="07:00&#10;07:30&#10;06:45&#10;08:15&#10;08:50&#10;09:30&#10;08:40"></textarea>
-                <div class="mt-6 p-6 rounded-2xl result-container-dashed text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Average Wakeup Times</p>
-                    <div class="flex items-center justify-center gap-4 mb-2">
-                        <span id="wake-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--:--</span>
-                        <button onclick="copyToClipboard('wake-res', this)" class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
-                            <i class="fa-regular fa-copy"></i> <span>COPY</span>
-                        </button>
-                    </div>
-                    <p class="text-xs text-slate-400">Based on <span id="wake-cnt" class="font-bold">0</span> wakeup times</p>
-                </div>
-            </div>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <div class="bg-white rounded-2xl overflow-hidden custom-shadow border border-slate-100">
-            <div class="bg-[#4a9488] px-6 py-4 flex justify-between items-center text-white">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-hourglass-start"></i>
-                    <span class="font-bold tracking-wide uppercase">Fall Asleep</span>
+            <div class="bg-white p-6 rounded-2xl custom-shadow border border-slate-100 text-center">
+                <p class="text-[10px] font-bold text-[#5c5be5] uppercase tracking-widest mb-2">Average Bed Time</p>
+                <div class="flex items-center justify-center gap-4">
+                    <span id="bed-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--:--</span>
+                    <button onclick="copyToClipboard('bed-res', this)"
+                        class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> <span>COPY</span>
+                    </button>
                 </div>
-                <button onclick="clearField('fall-in')" class="bg-white/20 hover:bg-white/30 text-[10px] font-bold py-1 px-3 rounded uppercase transition-all">
-                    <i class="fa-solid fa-trash-can mr-1"></i> Clear
-                </button>
+                <p class="text-[10px] text-slate-400 mt-2">Based on <span id="bed-cnt">0</span> days</p>
             </div>
-            <div class="p-6">
-                <label class="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-tight">Minutes taken to fall asleep (one per line)</label>
-                <textarea id="fall-in" oninput="calcMin('fall-in', 'fall-res', 'fall-cnt')" class="w-full h-48 p-4 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-100 text-slate-600 font-mono text-lg resize-none" placeholder="20&#10;15&#10;10&#10;30&#10;10&#10;15&#10;25"></textarea>
-                <div class="mt-6 p-6 rounded-2xl result-container-dashed text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Average Minutes</p>
-                    <div class="flex items-center justify-center gap-4 mb-2">
-                        <span id="fall-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--</span>
-                        <button onclick="copyToClipboard('fall-res', this)" class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
-                            <i class="fa-regular fa-copy"></i> <span>COPY</span>
-                        </button>
-                    </div>
-                    <p class="text-xs text-slate-400">Based on <span id="fall-cnt" class="font-bold">0</span> entries</p>
-                </div>
-            </div>
-        </div>
 
-        <div class="bg-white rounded-2xl overflow-hidden custom-shadow border border-slate-100">
-            <div class="bg-[#b538cf] px-6 py-4 flex justify-between items-center text-white">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-bed-pulse"></i>
-                    <span class="font-bold tracking-wide uppercase">Time Awake</span>
+            <div class="bg-white p-6 rounded-2xl custom-shadow border border-slate-100 text-center">
+                <p class="text-[10px] font-bold text-[#ef8e47] uppercase tracking-widest mb-2">Average Wakeup Time</p>
+                <div class="flex items-center justify-center gap-4">
+                    <span id="wake-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--:--</span>
+                    <button onclick="copyToClipboard('wake-res', this)"
+                        class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> <span>COPY</span>
+                    </button>
                 </div>
-                <button onclick="clearField('awake-in')" class="bg-white/20 hover:bg-white/30 text-[10px] font-bold py-1 px-3 rounded uppercase transition-all">
-                    <i class="fa-solid fa-trash-can mr-1"></i> Clear
-                </button>
+                <p class="text-[10px] text-slate-400 mt-2">Based on <span id="wake-cnt">0</span> days</p>
             </div>
-            <div class="p-6">
-                <label class="text-xs font-semibold text-slate-400 block mb-3 uppercase tracking-tight">Minutes spent awake after falling asleep (ONE PER LINE)</label>
-                <textarea id="awake-in" oninput="calcMin('awake-in', 'awake-res', 'awake-cnt')" class="w-full h-48 p-4 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-fuchsia-100 text-slate-600 font-mono text-lg resize-none" placeholder="5&#10;45&#10;0&#10;15&#10;15&#10;25&#10;10"></textarea>
-                <div class="mt-6 p-6 rounded-2xl result-container-dashed text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Average Minutes</p>
-                    <div class="flex items-center justify-center gap-4 mb-2">
-                        <span id="awake-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--</span>
-                        <button onclick="copyToClipboard('awake-res', this)" class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
-                            <i class="fa-regular fa-copy"></i> <span>COPY</span>
-                        </button>
-                    </div>
-                    <p class="text-xs text-slate-400">Based on <span id="awake-cnt" class="font-bold">0</span> entries</p>
-                </div>
-            </div>
-        </div>
 
+            <div class="bg-white p-6 rounded-2xl custom-shadow border border-slate-100 text-center">
+                <p class="text-[10px] font-bold text-[#4a9488] uppercase tracking-widest mb-2">Avg. Minutes to Fall
+                    Asleep</p>
+                <div class="flex items-center justify-center gap-4">
+                    <span id="fall-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--</span>
+                    <button onclick="copyToClipboard('fall-res', this)"
+                        class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> <span>COPY</span>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-2">Based on <span id="fall-cnt">0</span> entries</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl custom-shadow border border-slate-100 text-center">
+                <p class="text-[10px] font-bold text-[#b538cf] uppercase tracking-widest mb-2">Avg. Minutes Awake
+                    Night</p>
+                <div class="flex items-center justify-center gap-4">
+                    <span id="awake-res" class="text-4xl font-extrabold text-slate-800 tracking-tighter">--</span>
+                    <button onclick="copyToClipboard('awake-res', this)"
+                        class="copy-btn-transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-slate-500 text-[11px] font-bold flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> <span>COPY</span>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-2">Based on <span id="awake-cnt">0</span> entries</p>
+            </div>
+
+        </div>
     </div>
 
     <script>
+        // ... (All your existing Javascript remains exactly the same) ...
         function showToast() {
             const toast = document.getElementById("toast");
             toast.className = "show";
-            setTimeout(() => { 
-                toast.className = toast.className.replace("show", ""); 
-            }, 3000);
-        }
-
-        function clearField(id) {
-            document.getElementById(id).value = '';
-            document.getElementById(id).dispatchEvent(new Event('input'));
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
         }
 
         function copyToClipboard(id, btnElement) {
@@ -205,18 +145,10 @@
             if (val !== "--" && val !== "--:--") {
                 navigator.clipboard.writeText(val);
                 showToast();
-
-                // Visual feedback on the button
-                const originalBg = "bg-slate-100";
-                const originalText = "text-slate-500";
-                const originalHtml = btnElement.innerHTML;
-
-                // Change to Success state
+                const originalBg = "bg-slate-100", originalText = "text-slate-500", originalHtml = btnElement.innerHTML;
                 btnElement.classList.remove(originalBg, originalText);
                 btnElement.classList.add("bg-green-500", "text-white");
                 btnElement.innerHTML = '<i class="fa-solid fa-check"></i> <span>COPIED!</span>';
-
-                // Revert after 2 seconds
                 setTimeout(() => {
                     btnElement.classList.remove("bg-green-500", "text-white");
                     btnElement.classList.add(originalBg, originalText);
@@ -228,13 +160,7 @@
         function calcMin(inputId, resId, cntId) {
             const val = document.getElementById(inputId).value;
             const entries = val.split('\n').map(l => l.trim()).filter(l => l !== "" && !isNaN(l));
-            
-            if (entries.length === 0) {
-                document.getElementById(resId).innerText = "--";
-                document.getElementById(cntId).innerText = "0";
-                return;
-            }
-
+            if (entries.length === 0) { document.getElementById(resId).innerText = "--"; document.getElementById(cntId).innerText = "0"; return; }
             const sum = entries.reduce((a, b) => a + parseFloat(b), 0);
             document.getElementById(resId).innerText = Math.round(sum / entries.length);
             document.getElementById(cntId).innerText = entries.length;
@@ -243,70 +169,38 @@
         function calcTime(inputId, resId, cntId) {
             const val = document.getElementById(inputId).value;
             const entries = val.split('\n').map(l => l.trim()).filter(l => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(l));
-
-            if (entries.length === 0) {
-                document.getElementById(resId).innerText = "--:--";
-                document.getElementById(cntId).innerText = "0";
-                return;
-            }
-
-            let sinSum = 0;
-            let cosSum = 0;
-
+            if (entries.length === 0) { document.getElementById(resId).innerText = "--:--"; document.getElementById(cntId).innerText = "0"; return; }
+            let sinSum = 0, cosSum = 0;
             entries.forEach(time => {
                 const [h, m] = time.split(':').map(Number);
-                const totalMins = h * 60 + m;
-                const angle = (totalMins / 1440) * 2 * Math.PI;
-                sinSum += Math.sin(angle);
-                cosSum += Math.cos(angle);
+                const angle = ((h * 60 + m) / 1440) * 2 * Math.PI;
+                sinSum += Math.sin(angle); cosSum += Math.cos(angle);
             });
-
             const avgAngle = Math.atan2(sinSum, cosSum);
             let avgMins = (avgAngle * 1440) / (2 * Math.PI);
             if (avgMins < 0) avgMins += 1440;
-
             const finalMins = Math.round(avgMins) % 1440;
-            const h = Math.floor(finalMins / 60);
-            const m = finalMins % 60;
-
-            document.getElementById(resId).innerText = 
-                String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
-            document.getElementById(cntId).innerText = entries.length;
+            const h = Math.floor(finalMins / 60), m = finalMins % 60;
+            document.getElementById(resId).innerText = String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
             document.getElementById(cntId).innerText = entries.length;
         }
 
         function prefillFromQueryParams() {
             const params = new URLSearchParams(window.location.search);
-            
-            const mapping = {
-                'bedTimes': 'bed-in',
-                'wakeTimes': 'wake-in',
-                'fallTimes': 'fall-in',
-                'awakeTimes': 'awake-in'
-            };
-
+            const mapping = { 'bedTimes': 'bed-in', 'wakeTimes': 'wake-in', 'fallTimes': 'fall-in', 'awakeTimes': 'awake-in' };
             for (const [paramName, inputId] of Object.entries(mapping)) {
                 if (params.has(paramName)) {
-                    const val = params.get(paramName);
-                    // Replace commas with newlines
-                    const formattedVal = val.split(',').join('\n');
+                    const formattedVal = params.get(paramName).split(',').join('\n');
                     const element = document.getElementById(inputId);
                     if (element) {
                         element.value = formattedVal;
-                        // Trigger input event to run calculations
                         element.dispatchEvent(new Event('input'));
                     }
                 }
             }
         }
-
-        // Run on load
-        window.addEventListener('input', () => {
-             // Just ensures if anything needs to re-run it can, but main logic is in specific handlers
-        });
-        
-        // Call prefill initially
         prefillFromQueryParams();
     </script>
 </body>
+
 </html>
